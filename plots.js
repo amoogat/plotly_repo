@@ -1,3 +1,4 @@
+/** GREEK DATA */
 // Sort the data array using the greekSearchResults value
 data.sort(function(a, b) {
   return parseFloat(b.greekSearchResults) - parseFloat(a.greekSearchResults);
@@ -35,3 +36,46 @@ var layout = {
 
 // Render the plot to the div tag with id "plot"
 Plotly.newPlot("plot", data, layout);
+
+/** DEMOGRAPHIC INFO */
+// handles initial display case for Demographic Info
+function init() {
+  var selector = d3.select("#selDataset");
+
+  d3.json("samples.json").then((data) => {
+    console.log(data);
+    var sampleNames = data.names;
+    sampleNames.forEach((sample) => {
+      selector
+        .append("option")
+        .text(sample)
+        .property("value", sample);
+    });
+})}
+
+init();
+
+// handles changes on webpage, parameter chosen from dropdown
+function optionChanged(newSample) {
+buildMetadata(newSample);
+buildCharts(newSample);
+}
+
+// dynamic retrieval of metadata, same chosen parameter as above
+function buildMetadata(sample) {
+  d3.json("samples.json").then((data) => {
+    var metadata = data.metadata;
+    var resultArray = metadata.filter(sampleObj => sampleObj.id == sample);
+    var result = resultArray[0]; // fisrt item of array assigned
+    var PANEL = d3.select("#sample-metadata"); // selects div of this id
+
+    PANEL.html("");
+    PANEL.append("h6").text("ID: " + result.id);
+    PANEL.append("h6").text("ETHNICITY: " + result.ethnicity);
+    PANEL.append("h6").text("GENDER: " + result.gender);
+    PANEL.append("h6").text("AGE: " + result.age);
+    PANEL.append("h6").text("LOCATION: " + result.location);
+    PANEL.append("h6").text("BBTYPE: " + result.bbtype);
+    PANEL.append("h6").text("WFREQ: " + result.wfreq);
+  });
+}
